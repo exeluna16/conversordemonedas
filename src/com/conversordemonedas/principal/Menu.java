@@ -1,44 +1,65 @@
 package com.conversordemonedas.principal;
 
-import com.conversordemonedas.calculos.Calculadora;
-import com.conversordemonedas.modelos.CambioExchangeRateAPI;
-import com.google.gson.Gson;
-
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Scanner;
 
 public class Menu {
-    public int opcion;
 
     public Menu() throws IOException,InterruptedException {
-        Calculadora calculadora = new Calculadora();
-        int opcion = 0;
+        int opcion = -1;
+        boolean salida = false;
         Scanner teclado = new Scanner(System.in);
+        String direccion = "https://v6.exchangerate-api.com/v6/e90e26a02d3beee817ad7f89/pair";
+        String url = "";
+        Double cantidadIngresada = 0.0;
+        Conversion conver = new Conversion();
+        while(!salida){
+            this.mostrarOpciones();
+            System.out.println("Ingrese una opcion: ");
+            opcion = teclado.nextInt();
 
-        System.out.println("OPCIONES");
-        System.out.println("Ingrese una opcion: ");
-        //opcion = teclado.nextInt();
-        String direccion = "https://v6.exchangerate-api.com/v6/e90e26a02d3beee817ad7f89/pair/ARS/USD";
+            switch (opcion) {
+                case 1:
+                    System.out.println("Ingrese la cantidad a convertir");
+                    cantidadIngresada = teclado.nextDouble();
+                    url = direccion.concat("/ARS/USD");
+                    conver.convertir(url,cantidadIngresada);
+                    break;
+                case 2:
+                    System.out.println("Ingrese la cantidad a convertir");
+                    cantidadIngresada = teclado.nextDouble();
+                    url = direccion.concat("/USD/ARS");
+                    conver.convertir(url,cantidadIngresada);
+                    break;
+                case 3:
+                    System.out.println("Ingrese la cantidad a convertir");
+                    cantidadIngresada = teclado.nextDouble();
+                    url = direccion.concat("/USD/BRL");
+                    conver.convertir(url,cantidadIngresada);
+                    break;
+                case 4:
+                    System.out.println("Ingrese la cantidad a convertir");
+                    cantidadIngresada = teclado.nextDouble();
+                    url = direccion.concat("/BRL/USD");
+                    conver.convertir(url,cantidadIngresada);
+                    break;
+                case 0:
+                    salida = true;
+                    break;
+                default:
+                    System.out.println("por favor ingrese una opcion valida");
+            }
+        }
+        System.out.println("--FIN--");
+    }
 
-        HttpClient cliente = HttpClient.newHttpClient();
-        HttpRequest peticion = HttpRequest.newBuilder()
-                .uri(URI.create(direccion))
-                .build();
-
-        HttpResponse<String> respuesta = cliente
-                .send(peticion, HttpResponse.BodyHandlers.ofString());
-
-        String json = respuesta.body();
-        Gson gson = new Gson();
-
-        CambioExchangeRateAPI datosDeCambio = gson.fromJson(json,CambioExchangeRateAPI.class);
-
-        calculadora.calcularConversion(datosDeCambio,200.0);
-
-        //System.out.println(datosDeCambio);
+    public void mostrarOpciones(){
+        System.out.println("***********************************\n" +
+                "1) PESO ARGENTINO -> DOLAR\n" +
+                "2) DOLAR -> PESO ARGENTINO\n" +
+                "3) DOLAR -> REAL BRASILEÑO\n" +
+                "4) REAL BRASILEÑO -> DOLAR\n" +
+                "0) Salir\n"+
+                "***********************************\n");
     }
 }
